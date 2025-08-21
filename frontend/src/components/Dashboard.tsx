@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Header } from './Header';
@@ -8,6 +7,9 @@ import { RightPanel } from './RightPanel';
 import { useCrowdStore } from '../store/crowdStore';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
+const API_URL = import.meta.env.VITE_API_URL;
+const WS_URL = import.meta.env.VITE_WS_URL;
 
 export const Dashboard: React.FC = () => {
   const { 
@@ -19,73 +21,71 @@ export const Dashboard: React.FC = () => {
   } = useCrowdStore();
 
   useEffect(() => {
-    // Initialize demo data
-    const demoZones = [
-      {
-        id: 'zone-1',
-        name: 'Main Entrance',
-        density: 450,
-        utilization: 75,
-        isGate: true,
-        coordinates: [-74.006, 40.7128] as [number, number],
-        sparklineData: [20, 35, 45, 30, 60, 75, 45, 55, 40, 50]
-      },
-      {
-        id: 'zone-2',
-        name: 'Food Court',
-        density: 320,
-        utilization: 85,
-        isGate: false,
-        coordinates: [-74.007, 40.7135] as [number, number],
-        sparklineData: [40, 50, 65, 70, 85, 80, 75, 85, 90, 85]
-      },
-      {
-        id: 'zone-3',
-        name: 'Emergency Exit A',
-        density: 120,
-        utilization: 30,
-        isGate: true,
-        coordinates: [-74.005, 40.7125] as [number, number],
-        sparklineData: [10, 15, 25, 20, 30, 25, 35, 30, 28, 30]
-      }
-    ];
+    // 🔹 Initial fetch from REST API
+    async function fetchInitialData() {
+      try {
+        const metricsRes = await fetch(`${API_URL}/api/metrics`);
+        const metrics = await metricsRes.json();
 
-    const demoKpis = {
-      totalPeople: 2847,
-      zonesAbove70: 8,
-      zonesAbove90: 2,
-      alertsLast10Min: 3
+        if (metrics?.zones) {
+          setZones(metrics.zones);
+        }
+        if (metrics?.kpis) {
+          setKpis(metrics.kpis);
+        }
+      } catch (err) {
+        console.error("Failed to fetch metrics:", err);
+        toast.error("❌ Could not connect to backend API", { theme: "dark" });
+      }
+    }
+
+    fetchInitialData();
+
+    // 🔹 Setup WebSocket connection
+    const socket = new WebSocket(WS_URL);
+
+    socket.onopen = () => {
+      setWsConnected(true);
+      toast.success('✅ Connected to CrowdShield monitoring system', {
+        position: 'top-right',
+        theme: 'dark'
+      });
     };
 
-    setZones(demoZones);
-    setKpis(demoKpis);
-    
-    // Simulate WebSocket connection
-    setTimeout(() => {
-      setWsConnected(true);
-      toast.success('Connected to CrowdShield monitoring system', {
-        position: 'top-right',
-        theme: 'dark'
-      });
-    }, 1000);
+    socket.onmessage = (event) => {
+      try {
+        const msg = JSON.parse(event.data);
 
-    // Demo alert
-    setTimeout(() => {
-      addAlert({
-        id: 'alert-1',
-        severity: 'high',
-        zone: 'Food Court',
-        cause: 'Overcrowding detected - 85% capacity reached',
-        timestamp: new Date().toISOString(),
-        acknowledged: false
-      });
-      
-      toast.warning('High density alert in Food Court', {
-        position: 'top-right',
-        theme: 'dark'
-      });
-    }, 3000);
+        if (msg.type === "metrics") {
+          if (msg.payload?.zones) setZones(msg.payload.zones);
+          if (msg.payload?.kpis) setKpis(msg.payload.kpis);
+        }
 
+        if (msg.type === "alert") {
+          addAlert(msg.payload);
+          toast.warning(
+            `⚠️ ${msg.payload.type} alert in ${msg.payload.zoneId}`,
+            { theme: "dark" }
+          );
+        }
+      } catch (e) {
+        console.error("WebSocket message error:", e);
+      }
+    };
+
+    socket.onerror = (err) => {
+      console.error("WebSocket error:", err);
+      toast.error("⚠️ WebSocket connection error", { theme: "dark" });
+    };
+
+    socket.onclose = () => {
+      setWsConnected(false);
+      toast.info("🔌 Disconnected from CrowdShield", { theme: "dark" });
+    };
+
+    return () => {
+      socket.close();
+    };
   }, [setWsConnected, setZones, setKpis, addAlert]);
 
   return (
