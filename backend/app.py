@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .routers import metrics, predict, routing, incidents
+from .routers import metrics, predict, routing, incidents, websocket
 
 app = FastAPI(title="CrowdShield Backend", version="1.0")
 
@@ -14,10 +14,11 @@ app.add_middleware(
 )
 
 # Routers
-app.include_router(metrics.metrics_bp, prefix="/metrics", tags=["Metrics"])
-app.include_router(predict.predict_bp, prefix="/predict", tags=["Prediction"])
-app.include_router(routing.routing_bp, prefix="/routing", tags=["Routing"])
-app.include_router(incidents.incidents_bp, prefix="/incidents", tags=["Incidents"])
+app.include_router(metrics.metrics_bp, prefix="/api/metrics", tags=["Metrics"])
+app.include_router(predict.predict_bp, prefix="/api/predict", tags=["Prediction"])
+app.include_router(routing.routing_bp, prefix="/api/routing", tags=["Routing"])
+app.include_router(incidents.incidents_bp, prefix="/api/incidents", tags=["Incidents"])
+app.include_router(websocket.router, tags=["websocket"])
 
 @app.get("/")
 async def home():
