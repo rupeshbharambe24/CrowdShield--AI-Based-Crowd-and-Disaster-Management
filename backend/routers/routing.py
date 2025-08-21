@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Query
 from datetime import datetime
 
-routing_bp = APIRouter()
+router = APIRouter()
 
-@routing_bp.get("/")
+@router.get("/")
 async def get_route(from_zone: str = Query(...), to: str = Query(...)):
     """
     Return a mock route between two zones/gates.

@@ -3,12 +3,12 @@ from pydantic import BaseModel
 from datetime import datetime
 import random
 
-predict_bp = APIRouter()
+router = APIRouter()
 
 class PredictRequest(BaseModel):
     horizonSec: int = 300
 
-@predict_bp.post("/")
+@router.post("/")
 async def predict_future(req: PredictRequest):
     """
     Forecast crowd risk for given horizon (seconds).

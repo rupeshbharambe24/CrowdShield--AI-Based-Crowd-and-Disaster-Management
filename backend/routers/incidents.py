@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from datetime import datetime
 import uuid
 
-incidents_bp = APIRouter()
+router = APIRouter()
 
 class IncidentRaise(BaseModel):
     type: str
@@ -15,7 +15,7 @@ class IncidentAck(BaseModel):
 # In-memory store (for hackathon demo)
 INCIDENTS = []
 
-@incidents_bp.post("/raise")
+@router.post("/raise")
 async def raise_incident(incident: IncidentRaise):
     """
     Simulate raising an incident.
@@ -30,7 +30,7 @@ async def raise_incident(incident: IncidentRaise):
     INCIDENTS.append(new_incident)
     return {"message": "Incident raised", "incident": new_incident}
 
-@incidents_bp.post("/ack")
+@router.post("/ack")
 async def acknowledge_incident(body: IncidentAck):
     """
     Acknowledge an active incident.
@@ -41,7 +41,7 @@ async def acknowledge_incident(body: IncidentAck):
             return {"message": "Incident acknowledged", "incident": inc}
     return {"error": "Incident not found"}
 
-@incidents_bp.get("/")
+@router.get("/")
 async def list_incidents():
     """
     Get list of all incidents.

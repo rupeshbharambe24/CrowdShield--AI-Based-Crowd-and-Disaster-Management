@@ -14,10 +14,10 @@ app.add_middleware(
 )
 
 # Routers
-app.include_router(metrics.metrics_bp, prefix="/api/metrics", tags=["Metrics"])
-app.include_router(predict.predict_bp, prefix="/api/predict", tags=["Prediction"])
-app.include_router(routing.routing_bp, prefix="/api/routing", tags=["Routing"])
-app.include_router(incidents.incidents_bp, prefix="/api/incidents", tags=["Incidents"])
+app.include_router(metrics.router, prefix="/api/metrics", tags=["Metrics"])
+app.include_router(predict.router, prefix="/api/predict", tags=["Prediction"])
+app.include_router(routing.router, prefix="/api/routing", tags=["Routing"])
+app.include_router(incidents.router, prefix="/api/incidents", tags=["Incidents"])
 app.include_router(websocket.router, tags=["websocket"])
 
 @app.get("/")

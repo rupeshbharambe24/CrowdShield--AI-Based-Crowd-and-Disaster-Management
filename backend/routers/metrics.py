@@ -2,9 +2,9 @@ from fastapi import APIRouter
 from datetime import datetime
 import random
 
-metrics_bp = APIRouter()
+router = APIRouter()
 
-@metrics_bp.get("/")
+@router.get("/")
 async def get_metrics():
     """
     Return snapshot of zones, gates, and KPIs.
