@@ -1,0 +1,17 @@
+cameras:
+  - id: gate1
+    name: Entrance Gate 1
+    source: data/videos/gate1.mp4
+    zone: zone1
+  - id: gate2
+    name: Entrance Gate 2
+    source: data/videos/gate2.mp4
+    zone: zone2
+  - id: gate3
+    name: Entrance Gate 3
+    source: data/videos/gate3.mp4
+    zone: zone3
+  - id: gate4
+    name: Entrance Gate 4
+    source: data/videos/gate4.mp4
+    zone: zone4

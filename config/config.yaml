@@ -1,0 +1,45 @@
+server:
+  host: "0.0.0.0"
+  port: 8000
+
+runtime:
+  device: "auto"           # "cuda", "cpu", or "auto"
+  frame_width: 960
+  frame_height: 540
+  inference_fps: 12        # target processing fps (can frame-skip)
+  show_tracks: false
+
+models:
+  yolo_weights: "data/models/yolov8s.pt"
+  yolo_conf: 0.30
+  yolo_iou: 0.50
+
+zones:
+  file: "config/zones.geojson"
+  capacity_people_per_m2: 3.0     # default if not per-zone
+  smoothing_sec: 10
+
+graph:
+  file: "config/graph.geojson"
+  density_cost_k: 3.0
+  incident_penalty: 1000
+
+alerts:
+  amber_utilization: 0.70
+  red_utilization: 0.90
+  cooldown_sec: 15
+
+predictor:
+  enabled: true
+  horizon_sec: 300
+  model_path: "data/cache/predictor.pkl"
+  retrain_interval_sec: 120
+
+mqtt:
+  enabled: false
+  broker: "localhost"
+  port: 1883
+  topic_base: "crowdshield"
+
+frontend:
+  dist_dir: "frontend/dist"

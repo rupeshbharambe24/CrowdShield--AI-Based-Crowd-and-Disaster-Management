@@ -1,0 +1,39 @@
+# Core
+fastapi==0.112.2
+uvicorn[standard]==0.30.6
+pydantic==2.9.1
+python-dotenv==1.0.1
+pyyaml==6.0.2
+
+# Inference & CV
+ultralytics==8.3.5
+opencv-python==4.10.0.84
+numpy==1.26.4
+scipy==1.13.1
+
+# Tracking
+lapx==0.5.7
+filterpy==1.4.5
+
+# Geospatial
+shapely==2.0.4
+geopandas==1.0.1
+pyproj==3.6.1
+
+# Data / ML
+pandas==2.2.2
+lightgbm==4.4.0
+xgboost==2.1.1
+scikit-learn==1.5.1
+
+# Messaging
+paho-mqtt==2.1.0
+websockets==12.0
+
+# Utils
+orjson==3.10.7
+loguru==0.7.2
+networkx==3.3
+
+# Optional speed-ups
+# onnxruntime-gpu==1.19.0  # if you export YOLO to ONNX/TensorRT later
