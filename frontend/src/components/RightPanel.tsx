@@ -5,8 +5,8 @@ import { AlertTriangle, Users, Building, Clock, Check } from 'lucide-react';
 import { useCrowdStore } from '../store/crowdStore';
 import { Button } from './ui/button';
 
-const AnimatedCounter: React.FC<{ value: number; label: string; critical?: boolean }> = ({ 
-  value, 
+const AnimatedCounter: React.FC<{ value?: number; label: string; critical?: boolean }> = ({ 
+  value = 0, 
   label, 
   critical = false 
 }) => {
@@ -23,7 +23,7 @@ const AnimatedCounter: React.FC<{ value: number; label: string; critical?: boole
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.3 }}
       >
-        {value.toLocaleString()}
+        {Number(value || 0).toLocaleString()}
       </motion.div>
       <div className="text-sm text-muted-foreground">{label}</div>
     </motion.div>
