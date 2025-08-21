@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -15,7 +14,16 @@ import { useCrowdStore } from '../store/crowdStore';
 import { Button } from './ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 
-const SparklineChart: React.FC<{ data: number[] }> = ({ data }) => {
+const SparklineChart: React.FC<{ data?: number[] }> = ({ data }) => {
+  // Handle empty or undefined data
+  if (!data || data.length === 0) {
+    return (
+      <div className="w-16 h-8 flex items-center justify-center text-xs text-gray-400">
+        No Data
+      </div>
+    );
+  }
+
   const max = Math.max(...data);
   const min = Math.min(...data);
   const range = max - min || 1;
@@ -35,6 +43,8 @@ const SparklineChart: React.FC<{ data: number[] }> = ({ data }) => {
     </div>
   );
 };
+
+export default SparklineChart;
 
 export const Sidebar: React.FC = () => {
   const {
