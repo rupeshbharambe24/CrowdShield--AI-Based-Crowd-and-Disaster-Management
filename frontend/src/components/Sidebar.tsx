@@ -14,6 +14,8 @@ import { useCrowdStore } from '../store/crowdStore';
 import { Button } from './ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 
+
+
 const SparklineChart: React.FC<{ data?: number[] }> = ({ data }) => {
   // Handle empty or undefined data
   if (!data || data.length === 0) {
@@ -190,19 +192,24 @@ export const Sidebar: React.FC = () => {
             {/* Incident Simulation */}
             <div className="space-y-3">
               <h3 className="text-lg font-semibold text-crowd-electric">Simulate Incident</h3>
-              
+
               <Select value={selectedZone} onValueChange={setSelectedZone}>
                 <SelectTrigger className="bg-crowd-surface/50 border-white/20 text-foreground hover:bg-crowd-surface/70">
                   <SelectValue placeholder="Select zone" className="text-foreground" />
                 </SelectTrigger>
                 <SelectContent className="bg-crowd-surface border-white/10">
                   {zones.map((zone) => (
-                    <SelectItem key={zone.id} value={zone.id} className="text-foreground hover:bg-crowd-surface/50">
+                    <SelectItem
+                      key={zone.id}
+                      value={zone.id}
+                      className="text-foreground hover:bg-crowd-surface/50"
+                    >
                       {zone.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
+
 
               <div className="grid grid-cols-1 gap-2">
                 <Button
