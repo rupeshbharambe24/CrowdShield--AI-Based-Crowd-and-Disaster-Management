@@ -1,7 +1,6 @@
-
 import { create } from 'zustand';
 
-interface Zone {
+export interface Zone {
   id: string;
   name: string;
   density: number;
@@ -11,16 +10,17 @@ interface Zone {
   sparklineData: number[];
 }
 
-interface Alert {
+export interface Alert {
   id: string;
+  type: 'fire' | 'stampede' | 'medical';
   severity: 'low' | 'medium' | 'high' | 'critical';
   zone: string;
-  cause: string;
+  coordinates: [number, number];
   timestamp: string;
   acknowledged: boolean;
 }
 
-interface KPIs {
+export interface KPIs {
   totalPeople: number;
   zonesAbove70: number;
   zonesAbove90: number;
@@ -28,25 +28,20 @@ interface KPIs {
 }
 
 interface CrowdState {
-  // WebSocket
   wsConnected: boolean;
   setWsConnected: (connected: boolean) => void;
 
-  // Zones
   zones: Zone[];
   setZones: (zones: Zone[]) => void;
   updateZone: (zoneId: string, updates: Partial<Zone>) => void;
 
-  // Alerts
   alerts: Alert[];
   addAlert: (alert: Alert) => void;
   acknowledgeAlert: (alertId: string) => void;
 
-  // KPIs
   kpis: KPIs;
   setKpis: (kpis: KPIs) => void;
 
-  // Controls
   showHeatmap: boolean;
   showTracks: boolean;
   showRoutes: boolean;
@@ -54,47 +49,35 @@ interface CrowdState {
   toggleTracks: () => void;
   toggleRoutes: () => void;
 
-  // UI State
   sidebarCollapsed: boolean;
   setSidebarCollapsed: (collapsed: boolean) => void;
 }
 
 export const useCrowdStore = create<CrowdState>((set, get) => ({
-  // WebSocket
   wsConnected: false,
   setWsConnected: (connected) => set({ wsConnected: connected }),
 
-  // Zones
-  zones: [],
+zones: [
+  { id: '1', name: 'Gate A', density: 30, utilization: 40, isGate: true, coordinates: [19.967196724034377, 73.66653735317261], sparklineData: [10,20,30] }, // Delhi
+  { id: '2', name: 'Zone B', density: 70, utilization: 60, isGate: false, coordinates: [19.96660917369554, 73.6706158790857], sparklineData: [30,50,70] }, // Delhi nearby
+  { id: '3', name: 'Zone C', density: 90, utilization: 80, isGate: false, coordinates: [19.96546520664772, 73.66873073483795], sparklineData: [70,90,100] }, // Taj Mahal, Agra
+],
   setZones: (zones) => set({ zones }),
-  updateZone: (zoneId, updates) => 
-    set((state) => ({
-      zones: state.zones.map((zone) =>
-        zone.id === zoneId ? { ...zone, ...updates } : zone
-      ),
-    })),
+  updateZone: (zoneId, updates) => set((state) => ({
+    zones: state.zones.map((zone) => zone.id === zoneId ? { ...zone, ...updates } : zone),
+  })),
 
-  // Alerts
   alerts: [],
-  addAlert: (alert) => 
-    set((state) => ({ alerts: [alert, ...state.alerts] })),
-  acknowledgeAlert: (alertId) =>
-    set((state) => ({
-      alerts: state.alerts.map((alert) =>
-        alert.id === alertId ? { ...alert, acknowledged: true } : alert
-      ),
-    })),
+  addAlert: (alert) => set((state) => ({ alerts: [alert, ...state.alerts] })),
+  acknowledgeAlert: (alertId) => set((state) => ({
+    alerts: state.alerts.map((alert) =>
+      alert.id === alertId ? { ...alert, acknowledged: true } : alert
+    ),
+  })),
 
-  // KPIs
-  kpis: {
-    totalPeople: 0,
-    zonesAbove70: 0,
-    zonesAbove90: 0,
-    alertsLast10Min: 0,
-  },
+  kpis: { totalPeople: 0, zonesAbove70: 0, zonesAbove90: 0, alertsLast10Min: 0 },
   setKpis: (kpis) => set({ kpis }),
 
-  // Controls
   showHeatmap: true,
   showTracks: false,
   showRoutes: false,
@@ -102,7 +85,6 @@ export const useCrowdStore = create<CrowdState>((set, get) => ({
   toggleTracks: () => set((state) => ({ showTracks: !state.showTracks })),
   toggleRoutes: () => set((state) => ({ showRoutes: !state.showRoutes })),
 
-  // UI State
   sidebarCollapsed: false,
   setSidebarCollapsed: (collapsed) => set({ sidebarCollapsed: collapsed }),
 }));

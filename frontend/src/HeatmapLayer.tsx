@@ -1,42 +1,36 @@
-import { CircleMarker, Tooltip } from 'react-leaflet';
-import { useEffect, useState } from 'react';
+// HeatmapLayer.tsx
+import { CircleMarker, Tooltip } from "react-leaflet";
+import React from "react";
 
 interface Zone {
-  id: number;
-  coords: [number, number][];
+  id: string;
+  coordinates: [number, number];
   density: number;
 }
 
-interface Alert {
-  type: string;
-  zone?: number;
+interface HeatmapLayerProps {
+  zones: Zone[];
 }
 
-const HeatmapLayer: React.FC = () => {
-  const [zones, setZones] = useState<Zone[]>([]);
-  const [alerts, setAlerts] = useState<Alert[]>([]);
-
-  useEffect(() => {
-    const ws = new WebSocket('ws://localhost:5000/ws');
-    ws.onmessage = (msg: MessageEvent) => {
-      const data = JSON.parse(msg.data);
-      setZones(data.zones);
-      setAlerts(data.alerts);
-    };
-  }, []);
-
+const HeatmapLayer: React.FC<HeatmapLayerProps> = ({ zones }) => {
   return (
     <>
-      {zones.map(zone => (
-        <CircleMarker
-          key={zone.id}
-          center={[zone.coords[0][0], zone.coords[0][1]]}
-          radius={zone.density / 5}
-          color={zone.density > 100 ? 'red' : 'orange'}
-        >
-          <Tooltip>{`Zone ${zone.id}: ${zone.density} people`}</Tooltip>
-        </CircleMarker>
-      ))}
+      {zones.map((zone) => {
+        const radius = Math.min(50, zone.density); // limit max size
+        const color = zone.density > 80 ? "red" : zone.density > 50 ? "orange" : "green";
+
+        return (
+          <CircleMarker
+            key={zone.id}
+            center={zone.coordinates}
+            radius={radius}
+            color={color}
+            fillOpacity={0.5}
+          >
+            <Tooltip>{`${zone.id}: ${zone.density} people`}</Tooltip>
+          </CircleMarker>
+        );
+      })}
     </>
   );
 };
